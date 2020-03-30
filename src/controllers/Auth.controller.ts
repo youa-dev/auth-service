@@ -39,7 +39,7 @@ class AuthController {
   public async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
-      const user: IUser = await User.findOne({ email });
+      const user: IUser = await User.findOne({ email }).populate("profile");
       if (!user) throw new CustomException(404, "This email is not in use.");
       // Check if the provided password is valid
       const match = compareSync(password, user.password);
