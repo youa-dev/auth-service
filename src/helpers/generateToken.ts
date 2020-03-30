@@ -19,7 +19,7 @@ export default ({
   };
   const token = jwt.sign(payload, server.secret, {
     expiresIn: "1h",
-    issuer: "youa.dev"
+    issuer: server.issuer
   });
   return `Bearer ${token}`;
 };

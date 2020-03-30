@@ -7,7 +7,8 @@ const { server, db, google } = {
   server: {
     port: parseInt(process.env.PORT) || 5000,
     env: process.env.NODE_ENV || "development",
-    secret: process.env.SECRET
+    secret: process.env.SECRET,
+    issuer: process.env.TOKEN_ISSUER
   },
   db: {
     connection: process.env.DB_CONNECTION,
