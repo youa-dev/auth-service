@@ -18,7 +18,8 @@ export default ({
     profile: profile ? profile : null
   };
   const token = jwt.sign(payload, server.secret, {
-    expiresIn: "1h"
+    expiresIn: "1h",
+    issuer: "youa.dev"
   });
   return `Bearer ${token}`;
 };
