@@ -40,10 +40,15 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const user: IUser = await User.findOne({ email }).populate("profile");
-      if (!user) throw new CustomException(404, "This email is not in use.");
+      if (!user)
+        throw new CustomException(
+          404,
+          "The provided email address is not in use."
+        );
       // Check if the provided password is valid
       const match = compareSync(password, user.password);
-      if (!match) throw new CustomException(422, "Invalid password.");
+      if (!match)
+        throw new CustomException(422, "The provided password is not valid.");
       // Generate token
       const token = generateToken(user);
       // Return the generated token
@@ -76,7 +81,7 @@ class AuthController {
         await profile.save();
       }
       // Save and return
-      user.save().then(updated => res.status(200).json(updated));
+      user.save().then((updated) => res.status(200).json(updated));
     } catch (err) {
       return res.status(err.status || 500).json(err.message || err);
     }
@@ -91,7 +96,7 @@ class AuthController {
     const token = generateToken(req.user);
     return res.status(200).json({
       loggedIn: true,
-      token
+      token,
     });
   }
 }

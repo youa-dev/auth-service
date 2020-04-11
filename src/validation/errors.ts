@@ -4,7 +4,7 @@ export enum authErrors {
   LAST_NAME_EMPTY = "Please provide your last name.",
   // Email
   EMAIL_EMPTY = "Please provide your email address.",
-  EMAIL_INVALID = "The email address you have provided is not valid.",
+  EMAIL_INVALID = "The provided email address is not valid.",
   // Password
   PASSWORD_EMPTY = "Please provide a password.",
   CONFIRM_PASSWORD_EMPTY = "Please provide a confirmation password.",
