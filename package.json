@@ -9,7 +9,7 @@
     "start": "node .",
     "dev": "ts-node-dev src/bin/start.ts",
     "pretest": "npm run compile",
-    "test": "env NODE_ENV=test mocha dist/tests/*.test.js"
+    "test": "mocha dist/tests/test.test.js"
   },
   "repository": {
     "type": "git",
