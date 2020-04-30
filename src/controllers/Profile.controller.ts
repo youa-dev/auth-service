@@ -7,6 +7,26 @@ import CustomException from "../helpers/CustomException";
 import generateHandle from "../helpers/generateHandle";
 import User from "../db/models/User.model";
 import generateToken from "../helpers/generateToken";
+import jwt from "jsonwebtoken";
+
+const generateRefreshToken = async (id: string) => {
+  try {
+    const user: IUser = await User.findById(id).populate("profile");
+    const payload = {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      createdAt: user.createdAt,
+      profile: user.profile ? user.profile : null,
+    };
+    const token = jwt.sign(payload, server.secret, {
+      expiresIn: "1h",
+      issuer: server.issuer,
+    });
+    return `Bearer ${token}`;
+  } catch (error) {}
+};
 
 class ProfileController {
   public async createProfile(req: IRequest, res: Response) {
@@ -32,12 +52,12 @@ class ProfileController {
         biography: req.body.biography,
       });
       user.profile = newProfile.id;
-      user.save().then((updated) =>
-        res.status(200).json({
-          profile: newProfile,
-          token: generateToken(updated), // Refreshed user token
-        })
-      );
+      const token = await generateRefreshToken(user.id); // Refreshed user token
+
+      res.status(200).json({
+        profile: newProfile,
+        token,
+      });
     } catch (err) {
       return res.status(err.status || 500).json(err.message || err);
     }
