@@ -7,7 +7,7 @@
     "compile": "tsc",
     "prestart": "npm run compile",
     "start": "node .",
-    "dev": "ts-node-dev src/bin/start.ts",
+    "dev": "nodemon -x ts-node --files ./src/bin/start.ts",
     "pretest": "npm run compile",
     "test": "mocha dist/tests/test.test.js"
   },
@@ -64,7 +64,7 @@
     "typescript": "^3.8.3"
   },
   "devDependencies": {
-    "ts-node-dev": "^1.0.0-pre.44",
+    "ts-node": "^8.9.1",
     "tslint": "^5.20.1"
   }
 }

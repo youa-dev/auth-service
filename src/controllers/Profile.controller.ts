@@ -6,6 +6,7 @@ import Profile from "../db/models/Profile.model";
 import CustomException from "../helpers/CustomException";
 import generateHandle from "../helpers/generateHandle";
 import User from "../db/models/User.model";
+import generateToken from "../helpers/generateToken";
 
 class ProfileController {
   public async createProfile(req: IRequest, res: Response) {
@@ -13,7 +14,7 @@ class ProfileController {
     try {
       const [user, profile]: [IUser, IProfile] = await Promise.all([
         User.findById(req.user.id),
-        Profile.findById(req.user.id)
+        Profile.findById(req.user.id),
       ]);
       if (profile)
         throw new CustomException(403, "You already have a profile.");
@@ -28,17 +29,22 @@ class ProfileController {
         linkedin: req.body.linkedin,
         dev: req.body.dev,
         stackoverflow: req.body.stackoverflow,
-        biography: req.body.biography
+        biography: req.body.biography,
       });
       user.profile = newProfile.id;
-      user.save().then(() => res.status(200).json(newProfile));
+      user.save().then((updated) =>
+        res.status(200).json({
+          profile: newProfile,
+          token: generateToken(updated), // Refreshed user token
+        })
+      );
     } catch (err) {
       return res.status(err.status || 500).json(err.message || err);
     }
   }
   public async getProfile(req: Request, res: Response) {
     const profile = await Profile.findOne({
-      handle: req.params.handle
+      handle: req.params.handle,
     });
     if (!profile)
       return res
@@ -60,7 +66,7 @@ class ProfileController {
       profile.dev = req.body.dev;
       profile.stackoverflow = req.body.stackoverflow;
       profile.biography = req.body.biography;
-      profile.save().then(updated => res.status(200).json(updated));
+      profile.save().then((updated) => res.status(200).json(updated));
     } catch (error) {
       return res
         .status(error.status || 500)
@@ -70,7 +76,7 @@ class ProfileController {
   public async followProfile(req: IRequest, res: Response) {
     try {
       const profile: IProfile = await Profile.findOne({
-        handle: req.params.handle
+        handle: req.params.handle,
       });
       if (!profile) throw new CustomException(404, "Profile not found.");
       // Allow while in test environment -> Check if the user is trying to follow it's own account.
@@ -81,9 +87,9 @@ class ProfileController {
       // Iterate over followers, then handle the request
       const { followers } = profile;
       profile.followers = followers.includes(req.user.id)
-        ? followers.filter(v => v !== req.user.id)
+        ? followers.filter((v) => v !== req.user.id)
         : [...followers, req.user.id];
-      profile.save().then(updated => res.status(200).json(updated));
+      profile.save().then((updated) => res.status(200).json(updated));
     } catch (error) {
       return res
         .status(error.status || 500)
@@ -91,7 +97,7 @@ class ProfileController {
     }
   }
   public deleteProfile(req: IRequest, res: Response) {
-    Profile.findById(req.user.id).then(profile => {
+    Profile.findById(req.user.id).then((profile) => {
       profile.remove();
       return res.status(200).json({ deleted: true, timestamp: Date.now() });
     });
