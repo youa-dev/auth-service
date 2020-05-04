@@ -50,7 +50,7 @@ class AuthController {
       if (!match)
         throw new CustomException(422, "The provided password is not valid.");
       // Generate token
-      const token = generateToken(user);
+      const token = await generateToken(user.id);
       // Return the generated token
       return res.status(200).json({ loggedIn: true, token });
     } catch (err) {
@@ -92,8 +92,8 @@ class AuthController {
     await user.remove();
     return res.status(200).json({ deleted: true, timestamp: Date.now() });
   }
-  public generateJWTfromOAuth(req: IRequest, res: Response) {
-    const token = generateToken(req.user);
+  public async generateJWTfromOAuth(req: IRequest, res: Response) {
+    const token = await generateToken(req.user.id);
     return res.status(200).json({
       loggedIn: true,
       token,

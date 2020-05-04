@@ -7,26 +7,6 @@ import CustomException from "../helpers/CustomException";
 import generateHandle from "../helpers/generateHandle";
 import User from "../db/models/User.model";
 import generateToken from "../helpers/generateToken";
-import jwt from "jsonwebtoken";
-
-const generateRefreshToken = async (id: string) => {
-  try {
-    const user: IUser = await User.findById(id).populate("profile");
-    const payload = {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      createdAt: user.createdAt,
-      profile: user.profile ? user.profile : null,
-    };
-    const token = jwt.sign(payload, server.secret, {
-      expiresIn: "1h",
-      issuer: server.issuer,
-    });
-    return `Bearer ${token}`;
-  } catch (error) {}
-};
 
 class ProfileController {
   public async createProfile(req: IRequest, res: Response) {
@@ -52,7 +32,8 @@ class ProfileController {
         biography: req.body.biography,
       });
       user.profile = newProfile.id;
-      const token = await generateRefreshToken(user.id); // Refreshed user token
+      const updated = await user.save(),
+        token = await generateToken(updated.id); // Refreshed user token
 
       res.status(200).json({
         profile: newProfile,
@@ -86,7 +67,9 @@ class ProfileController {
       profile.dev = req.body.dev;
       profile.stackoverflow = req.body.stackoverflow;
       profile.biography = req.body.biography;
-      profile.save().then((updated) => res.status(200).json(updated));
+      const updated = await profile.save(),
+        token = await generateToken(updated.id);
+      res.status(200).json({ profile: updated, token });
     } catch (error) {
       return res
         .status(error.status || 500)
@@ -100,10 +83,8 @@ class ProfileController {
       });
       if (!profile) throw new CustomException(404, "Profile not found.");
       // Allow while in test environment -> Check if the user is trying to follow it's own account.
-      if (server.env !== "test") {
-        if (profile.id === req.user.id)
-          throw new CustomException(400, "You cannot follow your own profile.");
-      }
+      if (server.env !== "test" && profile.id === req.user.id)
+        throw new CustomException(400, "You cannot follow your own profile.");
       // Iterate over followers, then handle the request
       const { followers } = profile;
       profile.followers = followers.includes(req.user.id)
