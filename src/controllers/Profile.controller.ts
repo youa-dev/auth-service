@@ -30,6 +30,7 @@ class ProfileController {
         dev: req.body.dev,
         stackoverflow: req.body.stackoverflow,
         biography: req.body.biography,
+        owner: req.user.id,
       });
       user.profile = newProfile.id;
       const updated = await user.save(),
@@ -44,14 +45,17 @@ class ProfileController {
     }
   }
   public async getProfile(req: Request, res: Response) {
-    const profile = await Profile.findOne({
+    const profile: IProfile = await Profile.findOne({
       handle: req.params.handle,
     });
     if (!profile)
       return res
         .status(404)
         .json({ error: "A profile with this handle has not been found." });
-    return res.status(200).json(profile);
+    const { firstName, lastName, id }: IUser = await User.findById(
+      profile.owner
+    );
+    return res.status(200).json({ firstName, lastName, id, profile });
   }
   public async editProfile(req: IRequest, res: Response) {
     // TODO: Input validation

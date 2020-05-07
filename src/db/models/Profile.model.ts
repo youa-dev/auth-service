@@ -3,45 +3,50 @@ import generator from "./model.generator";
 
 const schema = new Schema({
   _id: Schema.Types.ObjectId,
+  owner: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   handle: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   profilePicture: {
     type: String,
     default:
-      "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+      "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png",
   },
   website: {
     type: String,
-    default: ""
+    default: "",
   },
   github: {
     type: String,
-    default: ""
+    default: "",
   },
   linkedin: {
     type: String,
-    default: ""
+    default: "",
   },
   dev: {
     type: String,
-    default: ""
+    default: "",
   },
   stackoverflow: {
     type: String,
-    default: ""
+    default: "",
   },
   biography: {
     type: String,
-    default: ""
+    default: "",
   },
   followers: [
     {
-      type: Schema.Types.ObjectId
-    }
-  ]
+      type: Schema.Types.ObjectId,
+    },
+  ],
 });
 
 export default generator("profile", schema);
