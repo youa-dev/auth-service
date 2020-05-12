@@ -27,6 +27,7 @@ export interface IProfile extends Document {
   id?: string;
   handle?: string;
   owner?: string;
+  following?: string[];
 }
 
 export interface IUser extends Document {

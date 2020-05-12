@@ -86,15 +86,26 @@ class ProfileController {
         handle: req.params.handle,
       });
       if (!profile) throw new CustomException(404, "Profile not found.");
-      // Allow while in test environment -> Check if the user is trying to follow it's own account.
-      if (server.env !== "test" && profile.id === req.user.id)
+      // Check if the user is trying to follow it's own account.
+      if (profile.id === req.user.id)
         throw new CustomException(400, "You cannot follow your own profile.");
       // Iterate over followers, then handle the request
       const { followers } = profile;
-      profile.followers = followers.includes(req.user.id)
-        ? followers.filter((v) => v !== req.user.id)
-        : [...followers, req.user.id];
-      profile.save().then((updated) => res.status(200).json(updated));
+      // Check if the profile is already being followed by the user
+      if (followers.includes(req.user.id)) {
+        // If so, remove the user from the array, and remove the profile ID from the req.user profile
+        profile.followers = followers.filter((v) => v !== req.user.id);
+        req.user.profile.following = req.user.profile.following.filter(
+          (v) => v !== profile.id
+        );
+      } else {
+        // Else, add the IDs to both the user keeping track of all the profiles it's following and the profile followers array
+        profile.followers = [...followers, req.user.id];
+        req.user.profile.following.push(profile.id);
+      }
+      const updated = await profile.save();
+      await req.user.profile.save();
+      return res.status(200).json(updated);
     } catch (error) {
       return res
         .status(error.status || 500)

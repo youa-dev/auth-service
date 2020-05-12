@@ -38,9 +38,9 @@
     "@types/jsonwebtoken": "^8.3.9",
     "@types/mocha": "^5.2.7",
     "@types/mongodb-memory-server": "^2.3.0",
-    "@types/mongoose": "^5.7.8",
+    "@types/mongoose": "^5.7.16",
     "@types/morgan": "^1.9.0",
-    "@types/node": "^12.12.34",
+    "@types/node": "^12.12.38",
     "@types/passport": "^1.0.3",
     "@types/passport-google-oauth": "^1.0.41",
     "@types/passport-jwt": "^3.0.3",
@@ -55,8 +55,8 @@
     "helmet": "^3.22.0",
     "jsonwebtoken": "^8.5.1",
     "mocha": "^6.2.3",
-    "mongodb-memory-server": "^6.5.2",
-    "mongoose": "^5.9.7",
+    "mongodb-memory-server": "^6.6.0",
+    "mongoose": "^5.9.13",
     "morgan": "^1.9.1",
     "passport": "^0.4.1",
     "passport-google-oauth": "^2.0.0",
@@ -64,7 +64,7 @@
     "typescript": "^3.8.3"
   },
   "devDependencies": {
-    "ts-node": "^8.9.1",
+    "ts-node": "^8.10.1",
     "tslint": "^5.20.1"
   }
 }

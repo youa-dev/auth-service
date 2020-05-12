@@ -47,6 +47,11 @@ const schema = new Schema({
       type: Schema.Types.ObjectId,
     },
   ],
+  following: [
+    {
+      type: Schema.Types.ObjectId,
+    },
+  ],
 });
 
 export default generator("profile", schema);
