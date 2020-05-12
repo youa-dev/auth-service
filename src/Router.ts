@@ -45,15 +45,15 @@ class Router {
         session: false,
         scope: [
           "https://www.googleapis.com/userinfo.profile",
-          "https://www.googleapis.com/userinfo.email"
-        ]
+          "https://www.googleapis.com/userinfo.email",
+        ],
       })
     );
     this.AUTH_ROUTER.get(
       "/oauth/redirect",
       passport.authenticate("google", {
         session: false,
-        failureRedirect: "/login"
+        failureRedirect: "/login",
       }),
       AuthController.generateJWTfromOAuth
     );
@@ -73,7 +73,7 @@ class Router {
       ProfileController.editProfile
     );
     this.PROFILE_ROUTER.patch(
-      "/follow/:handle",
+      "/follow/:profileID",
       passport.authenticate("jwt", { session: false }),
       ProfileController.followProfile
     );

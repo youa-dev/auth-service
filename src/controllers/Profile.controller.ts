@@ -82,30 +82,30 @@ class ProfileController {
   }
   public async followProfile(req: IRequest, res: Response) {
     try {
-      const profile: IProfile = await Profile.findOne({
-        handle: req.params.handle,
-      });
+      const profile: IProfile = await Profile.findById(req.params.profileID);
       if (!profile) throw new CustomException(404, "Profile not found.");
       // Check if the user is trying to follow it's own account.
       if (profile.id === req.user.id)
         throw new CustomException(400, "You cannot follow your own profile.");
       // Iterate over followers, then handle the request
-      const { followers } = profile;
       // Check if the profile is already being followed by the user
-      if (followers.includes(req.user.id)) {
+      if (profile.followers.includes(req.user.id)) {
+        console.log("true");
         // If so, remove the user from the array, and remove the profile ID from the req.user profile
-        profile.followers = followers.filter((v) => v !== req.user.id);
+        profile.followers = profile.followers.filter((p) => p != req.user.id);
         req.user.profile.following = req.user.profile.following.filter(
-          (v) => v !== profile.id
+          (p) => p != profile.id
         );
       } else {
         // Else, add the IDs to both the user keeping track of all the profiles it's following and the profile followers array
-        profile.followers = [...followers, req.user.id];
+        profile.followers = [...profile.followers, req.user.id];
         req.user.profile.following.push(profile.id);
       }
       const updated = await profile.save();
       await req.user.profile.save();
-      return res.status(200).json(updated);
+      const updatedUser = await req.user.save();
+      const token = await generateToken(updatedUser.id);
+      return res.status(200).json({ profile: updated, token });
     } catch (error) {
       return res
         .status(error.status || 500)
