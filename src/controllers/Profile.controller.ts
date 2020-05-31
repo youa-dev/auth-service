@@ -90,7 +90,6 @@ class ProfileController {
       // Iterate over followers, then handle the request
       // Check if the profile is already being followed by the user
       if (profile.followers.includes(req.user.id)) {
-        console.log("true");
         // If so, remove the user from the array, and remove the profile ID from the req.user profile
         profile.followers = profile.followers.filter((p) => p != req.user.id);
         req.user.profile.following = req.user.profile.following.filter(
